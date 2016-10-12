@@ -32,7 +32,7 @@ class RidgeRegression(object):
 
     def cross_validation(self, X, y):
         result = collections.defaultdict(dict)
-        for alpha in np.arange(0, 50, 0.1):
+        for alpha in np.arange(0, 100, 0.1):
             split_X = np.split(X, self.k_folds)
             split_y = np.split(y, self.k_folds)
             for i in xrange(self.k_folds):

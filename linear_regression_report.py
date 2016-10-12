@@ -1,5 +1,6 @@
 import scipy.io as sio
 from sklearn import linear_model
+import matplotlib
 from linear_regression import (LinearRegression, NonlinearMapping)
 from report import Report
 
@@ -9,8 +10,9 @@ if __name__ == '__main__':
     mapping = NonlinearMapping()
 
     for n in (1, 2, 5, 10, 20):
-        training_data = mapping.convert(mat_contents['X_trn'], degree=n)
-        test_data = mapping.convert(mat_contents['X_tst'], degree=n)
+        training_data, test_data = mapping.convert(mat_contents['X_trn'],
+                                                   mat_contents['X_tst'],
+                                                   degree=n)
         training_result = mat_contents['Y_trn']
         test_result = mat_contents['Y_tst']
 

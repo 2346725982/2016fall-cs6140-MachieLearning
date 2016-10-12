@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 
 
 class LogisticRegression(object):
@@ -25,7 +26,7 @@ class LogisticRegression(object):
             for i in xrange(len(labels)):
                 self.gradient_descent(X, y, i, labels[i])
 
-    def gradient_descent(self, X, y, i, label, alpha=0.5, epsilon=0.001, max_iter=10000):
+    def gradient_descent(self, X, y, i, label, alpha=1, epsilon=1e-5, max_iter=10000):
         sample_size, feature_size = X.shape
 
         w = np.ones((feature_size, 1))
@@ -34,6 +35,7 @@ class LogisticRegression(object):
         while not coverge and iteration < max_iter:
             loss = self.loss_function(X, y, label, w)
             gradient = np.dot(X.T, loss) / sample_size # + 0.01 * w
+            #  gradient = -X.T.dot(y - scipy.special.expit(X.dot(w)))
             w = w + alpha * gradient
 
             coverge = (np.linalg.norm(gradient) <= epsilon)
