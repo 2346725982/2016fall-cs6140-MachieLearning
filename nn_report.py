@@ -1,7 +1,6 @@
-import numpy as np
 import scipy.io as sio
-from sklearn.svm import SVC
-from algorithms.svm import SVM
+from sklearn.neural_network import MLPClassifier
+from algorithms.neural_networks import NeuralNetworks
 from model_evaluation import ClassificationReport as Report
 
 
@@ -15,14 +14,19 @@ if __name__ == '__main__':
     test_data = mat_contents['X_tst']
     test_result = mat_contents['Y_tst']
 
-    model = SVC()
+    model = MLPClassifier()
     model.fit(training_data, training_result)
     predict = model.predict(test_data)
     print model.get_params
-    print predict
     print Report.report_error(test_result, predict)
+    predict_result = model.predict(test_data)
+    print Report.report_error(test_result, predict_result)
 
-    model = SVM()
+    model = NeuralNetworks()
     model.fit(training_data, training_result)
-    print Report.report_error(training_result, model.predict(training_data))
-    print Report.report_error(test_result, model.predict(test_data))
+    predict_result = model.predict(training_data)
+    #  print predict_result
+    print Report.report_error(training_result, predict_result)
+    predict_result = model.predict(test_data)
+    #  print predict_result
+    print Report.report_error(test_result, predict_result)

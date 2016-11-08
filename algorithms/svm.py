@@ -29,10 +29,9 @@ class SVM(object):
             #  print b
             #  break
 
-    def smo(self, X, y, C=0.05, tol=0.001, max_passes=1000):
+    def smo(self, X, y, C=0.05, tol=0.001, max_passes=100):
         sample_size, feature_size = X.shape
-        a = np.zeros((sample_size, 1))
-        alpha = a.flatten()
+        alpha = np.array([0.0] * sample_size)
         bias = 0
 
         passes = 0
@@ -43,49 +42,49 @@ class SVM(object):
 
                 if (y[i] * ei < -tol and alpha[i] < C) or \
                    (y[i] * ei > tol and alpha[i] > 0):
-                    jj = random.randrange(0, sample_size-1)
-                    jj = sample_size - 1 if jj == i else jj
-                    ej = np.sum(alpha * y * X.dot(X[jj])) + bias - y[jj]
+                    j = random.randrange(0, sample_size-1)
+                    j = sample_size - 1 if j == i else j
+                    ej = np.sum(alpha * y * X.dot(X[j])) + bias - y[j]
 
                     ai_old = alpha[i]
-                    aj_old = alpha[jj]
+                    aj_old = alpha[j]
 
-                    if y[i] != y[jj]:
-                        L = max(0, alpha[jj] - alpha[i])
-                        H = min(C, C+alpha[jj] - alpha[i])
+                    if y[i] != y[j]:
+                        L = max(0, alpha[j] - alpha[i])
+                        H = min(C, C+alpha[j] - alpha[i])
                     else:
-                        L = max(0, alpha[i] + alpha[jj] - C)
-                        H = min(C, alpha[i] + alpha[jj])
-                    #  print y[i], y[jj]
+                        L = max(0, alpha[i] + alpha[j] - C)
+                        H = min(C, alpha[i] + alpha[j])
+                    #  print y[i], y[j]
                     #  print L, H
                     #  print ""
 
                     if L == H:
                         continue
 
-                    yita = 2 * X[i].dot(X[jj]) - X[i].dot(X[i]) - X[jj].dot(X[jj])
+                    yita = 2 * X[i].dot(X[j]) - X[i].dot(X[i]) - X[j].dot(X[j])
                     if yita >= 0:
                         continue
 
-                    alpha[jj] = alpha[jj] - y[jj] * (ei - ej) / yita
+                    alpha[j] = alpha[j] - y[j] * (ei - ej) / yita
 
-                    if alpha[jj] > H:
-                        alpha[jj] = H
-                    elif alpha[jj] < L:
-                        alpha[jj] = L
+                    if alpha[j] > H:
+                        alpha[j] = H
+                    elif alpha[j] < L:
+                        alpha[j] = L
 
-                    if abs(alpha[jj] - aj_old) < 10 ** -5:
+                    if abs(alpha[j] - aj_old) < 10 ** -5:
                         continue
 
-                    alpha[i] = alpha[i] + y[i] * y[jj] * (aj_old - alpha[jj])
+                    alpha[i] = alpha[i] + y[i] * y[j] * (aj_old - alpha[j])
                     b1 = bias - ei - y[i] * (alpha[i] - ai_old) * X[i].dot(X[i]) - \
-                         y[jj] * (alpha[jj] - aj_old) * X[i].dot(X[jj])
-                    b2 = bias - ej - y[i] * (alpha[i] - ai_old) * X[i].dot(X[jj]) - \
-                         y[jj] * (alpha[jj] - aj_old) * X[jj].dot(X[jj])
+                         y[j] * (alpha[j] - aj_old) * X[i].dot(X[j])
+                    b2 = bias - ej - y[i] * (alpha[i] - ai_old) * X[i].dot(X[j]) - \
+                         y[j] * (alpha[j] - aj_old) * X[j].dot(X[j])
 
                     if 0 < alpha[i] < C:
                         bias = b1
-                    elif 0 < alpha[jj] < C:
+                    elif 0 < alpha[j] < C:
                         bias = b2
                     else:
                         bias = (b1 + b2) / 2.0
